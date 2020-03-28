@@ -64,6 +64,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+    WCHAR path[MAX_PATH + 4] = { 0 };
+    GetModuleFileName(NULL, path, MAX_PATH);
+    lstrcat(path, TEXT(".ini"));
+
+    int nShowWindow = GetPrivateProfileInt(TEXT("Window"), TEXT("show"), SW_SHOWNORMAL, path);
+    int dwFlags = GetPrivateProfileInt(TEXT("Window"), TEXT("flags"), STARTF_USESHOWWINDOW, path);
+
     scoped_handle token;
     if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, token.ref()))
     {
@@ -103,8 +110,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(STARTUPINFO);
     si.lpDesktop = desk;
-    si.wShowWindow = SW_SHOWNORMAL;
-    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = nShowWindow;
+    si.dwFlags = dwFlags;
     PROCESS_INFORMATION pi;
     ZeroMemory(&pi, sizeof(pi));
 
